@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo Interativo de RPG</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 20px;
+    }
+    h1, h2 { color: #facc15; }
+    .section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #020617;
+      border-radius: 12px;
+    }
+    .options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .option {
+      padding: 12px;
+      border: 2px solid #334155;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .option.selected {
+      background: #facc15;
+      color: #020617;
+      font-weight: bold;
+    }
+    button {
+      padding: 12px 20px;
+      background: #facc15;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #summary {
+      margin-top: 15px;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🎲 Catálogo Interativo de RPG</h1>
+
+<div class="section">
+  <h2>Origem (escolha 1)</h2>
+  <div class="options" data-group="origem">
+    <div class="option">Nobre decadente</div>
+    <div class="option">Povo comum</div>
+    <div class="option">Forasteiro</div>
+    <div class="option">Criado por facção secreta</div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Vantagens (até 2)</h2>
+  <div class="options" data-group="vantagens" data-limit="2">
+    <div class="option">Contatos influentes</div>
+    <div class="option">Conhecimento proibido</div>
+    <div class="option">Sorte improvável</div>
+    <div class="option">Reputação temida</div>
+  </div>
+</div>
+
+<div class="section">
+  <button onclick="finalizar()">Finalizar</button>
+  <div id="summary"></div>
+</div>
+
+<script>
+const selections = {};
+
+document.querySelectorAll('.options').forEach(group => {
+  const name = group.dataset.group;
+  const limit = group.dataset.limit ? parseInt(group.dataset.limit) : 1;
+  selections[name] = [];
+
+  group.querySelectorAll('.option').forEach(option => {
+    option.onclick = () => {
+      const val = option.innerText;
+
+      if (selections[name].includes(val)) {
+        selections[name] = selections[name].filter(v => v !== val);
+        option.classList.remove('selected');
+        return;
+      }
+
+      if (selections[name].length >= limit) return;
+
+      if (limit === 1) {
+        selections[name] = [val];
+        group.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+      } else {
+        selections[name].push(val);
+      }
+      option.classList.add('selected');
+    };
+  });
+});
+
+function finalizar() {
+  let t = 'RESUMO\\n\\n';
+  for (let k in selections) {
+    t += k.toUpperCase() + ': ' + (selections[k].join(', ') || 'Nenhuma') + '\\n';
+  }
+  document.getElementById('summary').innerText = t;
+}
+</script>
+
+</body>
+</html>
